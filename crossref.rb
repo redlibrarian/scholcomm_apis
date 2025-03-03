@@ -28,7 +28,13 @@ def display_data(results)
   puts results
 end
 
-display_data(get_works_by_member(MEMBER_ID))
+def display_count(results)
+  data = JSON.parse(results, symbolize_names: true)
+  puts data[:message][:'total-results']
+end
+
+#display_data(get_works_by_member(MEMBER_ID))
+display_count(get_works_by_member(MEMBER_ID))
 
 #def get_data(page:)
 #  CSV.open("crossref.csv", 'ab') do |csv|
