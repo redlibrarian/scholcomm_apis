@@ -8,33 +8,47 @@ require 'json'
 BASE_URL = "https://api.crossref.org/"
 FUNDER_URL = "funders/"
 MEMBER_URL = "members/"
-WORKS_URL = "works/"
+WORKS_URL = "works"
 FUNDER_ID = "100009367" 
 MEMBER_ID = "14095"
+AFFILIATION = "University+of+Winnipeg"
 
-def get_works(url, filter)
-  RestClient.get(BASE_URL + url + filter + '/' + WORKS_URL)
+def query_by_affiliation(affiliation)
+  url = BASE_URL + WORKS_URL + "?query.affiliation=" + affiliation
+  RestClient.get(url)
+end
+
+def get_page_of_works(url, filter)
+  url = BASE_URL + url + filter + '/' + WORKS_URL # to page through, use &rows=<rows>&cursor=* (will get next-cursor in response)
+  RestClient.get(url)
+end
+
+def get_all_works_by_funder(url, filter)
+  response = get_page_of_works(url, filter)
+  count = total-results(response)
+  # flesh this out with cursor pagination
 end
 
 def get_works_by_funder(funder)
-  get_works(FUNDER_URL, funder)
+  get_page_of_works(FUNDER_URL, funder)
 end
 
 def get_works_by_member(member)
-  get_works(MEMBER_URL, member)
+  get_page_of_works(MEMBER_URL, member)
 end
 
 def display_data(results)
-  puts results
+  data = JSON.parse(results, symbolize_names: true)
+  puts data
 end
 
-def display_count(results)
-  data = JSON.parse(results, symbolize_names: true)
-  puts data[:message][:'total-results']
+def total_results(results)
+  JSON.parse(results, symbolize_names: true)[:message][:'total-results']
 end
 
 #display_data(get_works_by_member(MEMBER_ID))
-display_count(get_works_by_member(MEMBER_ID))
+puts "Total result by member: " + total_results(get_page_of_works(MEMBER_URL, MEMBER_ID)).to_s
+puts "Total result by affiliation: " + total_results(query_by_affiliation(AFFILIATION)).to_s
 
 #def get_data(page:)
 #  CSV.open("crossref.csv", 'ab') do |csv|
