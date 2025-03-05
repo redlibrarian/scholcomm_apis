@@ -25,7 +25,7 @@ end
 
 def get_all_works_by_funder(url, filter)
   response = get_page_of_works(url, filter)
-  count = total-results(response)
+  # count = total-results(response)
   # flesh this out with cursor pagination
 end
 
@@ -49,6 +49,30 @@ end
 #display_data(get_works_by_member(MEMBER_ID))
 puts "Total result by member: " + total_results(get_page_of_works(MEMBER_URL, MEMBER_ID)).to_s
 puts "Total result by affiliation: " + total_results(query_by_affiliation(AFFILIATION)).to_s
+
+def construct_record(item)  # we can use this to build whatever records we want
+       title = item[:title]
+       doi = item[:DOI]
+       journal = item[:'short-container-title']
+       author_name = ''
+       item[:author].each do |author|
+         if author[:sequence] == "first" and author[:given] then
+           author_name = author[:given] + ' ' + author[:family]
+         end
+       end
+       [title, doi, journal, author_name]
+end
+
+def write_to_csv(fname, results)
+  CSV.open(fname, 'wb') do |csv|
+    data = JSON.parse(results, symbolize_names: true)
+    data[:message][:items].each do |item|
+      csv << construct_record(item)
+    end
+  end
+end
+
+write_to_csv("output.csv", get_works_by_member(MEMBER_ID))
 
 #def get_data(page:)
 #  CSV.open("crossref.csv", 'ab') do |csv|
