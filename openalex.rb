@@ -38,3 +38,11 @@ def get_data(page:)
 end
 
 get_data(page: 1)
+
+# convert to python
+# doesn't have to be retroactive; pull, say, the last month
+# license field isn't much help - if it has an OA license (e.g. cc-by) then it's OA, if it's anything else or null flag for john
+# we can assume if the PDF is accessible (request PDF, get 200 code), then the article is OA. If not, flag for john,.
+# Produce two data extracts, one flagged for john, one ready for DSpace ingest.
+# Get a list of the DSpace fields (in particular the required fields) in order to construct the records.
+# DSpace ingest: easiest format is probably DSpace Simple Archive FOrmat: https://wiki.lyrasis.org/display/DSDOC5x/Importing+and+Exporting+Items+via+Simple+Archive+Format
